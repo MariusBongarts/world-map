@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FirebaseModule } from './firebase/firebase.module';
+import { LeafletMapModule } from './leaflet-map/leaflet-map.module';
 
 @NgModule({
   declarations: [
@@ -12,7 +13,8 @@ import { FirebaseModule } from './firebase/firebase.module';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FirebaseModule
+    FirebaseModule,
+    LeafletMapModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -6,7 +6,9 @@ import { environmentSecret } from './environment.secret';
 
 export const environment = {
   production: false,
-  firebaseConfig: environmentSecret.firebaseConfig
+  firebaseConfig: environmentSecret.firebaseConfig,
+  geoApifyKey: environmentSecret.geoApifyKey,
+  mapboxGLApiKey: environmentSecret.mapboxGLApiKey,
 };
 
 /*
