@@ -3,6 +3,7 @@ import 'mapbox-gl-leaflet';
 import * as L from 'leaflet';
 import { environment } from '../../environments/environment';
 import { dummyData } from '../../specs/dummy-data';
+import { FeatureCountry, FeatureGroupCountry } from '../public-interfaces';
 
 @Component({
   selector: 'app-leaflet-map',
@@ -42,13 +43,32 @@ export class LeafletMapComponent implements AfterViewInit {
       accessToken: environment.mapboxGLApiKey,
     }).addTo(map);
 
+    // @ts-ignore - ignore 'This expression is not callable' error, because it is
+    const info = L.control();
+
+    info.onAdd = function(innerMap: any) {
+      this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+      this.update();
+      return this._div;
+    };
+
+    // method that we will use to update the control based on feature properties passed
+    info.update = function(props: FeatureCountry['properties']) {
+      this._div.innerHTML = props ? `
+      <h4>${props.name}</h4>
+      <span>Not visited</span>`
+        : 'Hover over a state';
+    };
+
+    info.addTo(map);
+
     function zoomToFeature(e: any) {
-      const layer = e.target as L.FeatureGroup;
+      const layer = e.target as FeatureGroupCountry;
       map.fitBounds(layer.getBounds());
     }
     let geoJson: L.GeoJSON;
     function resetHighlight(e: any) {
-      const layer = e.target as L.FeatureGroup;
+      const layer = e.target as FeatureGroupCountry;
       layer.setStyle({
         weight: 5,
         color: '#666',
@@ -59,7 +79,7 @@ export class LeafletMapComponent implements AfterViewInit {
     }
 
     function highlightFeature(e: any) {
-      const layer = e.target as L.FeatureGroup;
+      const layer = e.target as FeatureGroupCountry;
       layer.setStyle({
         weight: 2,
         color: '#666',
@@ -68,12 +88,15 @@ export class LeafletMapComponent implements AfterViewInit {
         fillOpacity: 0
       });
 
+
+      info.update(layer.feature.properties);
+
       if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
         layer.bringToFront();
       }
     }
 
-    function onEachFeature(feature: GeoJSON.Feature, layer: L.FeatureGroup) {
+    function onEachFeature(feature: GeoJSON.Feature, layer: FeatureGroupCountry) {
       layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight,
