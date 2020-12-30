@@ -3,7 +3,7 @@ import 'mapbox-gl-leaflet';
 import * as L from 'leaflet';
 import { environment } from '../../environments/environment';
 import { dummyData } from '../../specs/dummy-data';
-import { FeatureCountry, FeatureGroupCountry, CountryControl } from '../public-interfaces';
+import { FeatureCountry, CountryControl } from '../public-interfaces';
 
 @Component({
   selector: 'app-leaflet-map',
@@ -62,23 +62,18 @@ export class LeafletMapComponent implements AfterViewInit {
     info.addTo(map);
 
     function zoomToFeature(e: any) {
-      const layer = e.target as FeatureGroupCountry;
+      const layer = e.target as L.FeatureGroup;
       map.fitBounds(layer.getBounds());
     }
     let geoJson: L.GeoJSON;
     function resetHighlight(e: any) {
-      const layer = e.target as FeatureGroupCountry;
-      layer.setStyle({
-        weight: 5,
-        color: '#666',
-        dashArray: '',
-        fillOpacity: 0.1
-      });
-      geoJson.resetStyle(e.target);
+      const layer = e.target as L.FeatureGroup;
+      geoJson.resetStyle(layer);
     }
 
     function highlightFeature(e: any) {
-      const layer = e.target as FeatureGroupCountry;
+      const layer = e.target as L.FeatureGroup;
+      const feature = e.target.feature as FeatureCountry;
       layer.setStyle({
         weight: 2,
         color: '#666',
@@ -87,20 +82,22 @@ export class LeafletMapComponent implements AfterViewInit {
         fillOpacity: 0
       });
 
-
-      info.update(layer.feature.properties);
+      info.update(feature.properties);
 
       if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
         layer.bringToFront();
       }
     }
 
-    function onEachFeature(feature: GeoJSON.Feature, layer: FeatureGroupCountry) {
+    function onEachFeature(feature: FeatureCountry, layer: L.FeatureGroup) {
       layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight,
-        click: zoomToFeature
+        click: zoomToFeature,
       });
+      if (feature.properties.name === 'Germany') {
+        layer.setStyle({ fillColor: '#ffff' });
+      }
     }
 
     const geoJSONOptions: L.GeoJSONOptions = {
@@ -110,7 +107,7 @@ export class LeafletMapComponent implements AfterViewInit {
         opacity: 1,
         color: 'white',
         dashArray: '3',
-        fillOpacity: 0.1
+        fillOpacity: 0.2
       },
       onEachFeature,
     };

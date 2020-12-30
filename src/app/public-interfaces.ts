@@ -1,4 +1,3 @@
-import { FeatureGroup } from 'leaflet';
 
 export interface Entity {
   id?: string;
@@ -13,15 +12,15 @@ export interface CountryProperties {
   id: string;
 }
 
-export interface FeatureCountry extends GeoJSON.FeatureCollection  {
+export interface FeatureCountry extends GeoJSON.Feature<GeoJSON.MultiPolygon, any>  {
   properties: CountryProperties;
 }
 
-export interface FeatureGroupCountry extends L.FeatureGroup {
-  feature: FeatureCountry;
-}
 
+/**
+ * Control which is shown on the top-right corner in map to show information for highlighted country
+ */
 export interface CountryControl extends L.Control {
   // Allow additional properties
-  [x: string]: any;
+  [prop: string]: any;
 }
