@@ -7,7 +7,9 @@ import { environmentSecret } from './environment.secret';
 export const environment = {
   production: false,
   firebaseConfig: environmentSecret.firebaseConfig,
+  // You get one here: https://myprojects.geoapify.com/
   geoApifyKey: environmentSecret.geoApifyKey,
+  // You get one here: https://account.mapbox.com/access-tokens
   mapboxGLApiKey: environmentSecret.mapboxGLApiKey,
 };
 
