@@ -27,7 +27,7 @@ export class LeafletMapComponent implements AfterViewInit {
 
     const map = new L.Map(this.mapContainer.nativeElement).setView(
       [initialState.lat, initialState.lng],
-      initialState.zoom
+      initialState.zoom,
     );
 
     // the attribution is required for the Geoapify Free tariff plan
@@ -39,25 +39,33 @@ export class LeafletMapComponent implements AfterViewInit {
 
     L.mapboxGL({
       style: `${mapStyle}?apiKey=${environment.geoApifyKey}`,
-      accessToken: environment.mapboxGLApiKey
+      accessToken: environment.mapboxGLApiKey,
     }).addTo(map);
 
     function zoomToFeature(e: any) {
-      map.fitBounds(e.target.getBounds());
+      const layer = e.target as L.FeatureGroup;
+      map.fitBounds(layer.getBounds());
     }
     let geoJson: L.GeoJSON;
     function resetHighlight(e: any) {
-      geoJson.resetStyle(e.target);
-    }
-
-    function highlightFeature(e: MouseEvent) {
-      const layer = e.target as any;
-
+      const layer = e.target as L.FeatureGroup;
       layer.setStyle({
         weight: 5,
         color: '#666',
         dashArray: '',
-        fillOpacity: 0.7
+        fillOpacity: 0.1
+      });
+      geoJson.resetStyle(e.target);
+    }
+
+    function highlightFeature(e: any) {
+      const layer = e.target as L.FeatureGroup;
+      layer.setStyle({
+        weight: 2,
+        color: '#666',
+        dashArray: '',
+        fillColor: '#666',
+        fillOpacity: 0
       });
 
       if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
@@ -65,7 +73,7 @@ export class LeafletMapComponent implements AfterViewInit {
       }
     }
 
-    function onEachFeature(feature: GeoJSON.Feature, layer: any) {
+    function onEachFeature(feature: GeoJSON.Feature, layer: L.FeatureGroup) {
       layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight,
@@ -75,18 +83,17 @@ export class LeafletMapComponent implements AfterViewInit {
 
     const geoJSONOptions: L.GeoJSONOptions = {
       style: {
-        fillColor: '#FC4E2A',
+        fillColor: '#666',
         weight: 2,
         opacity: 1,
         color: 'white',
         dashArray: '3',
-        fillOpacity: 0.2
+        fillOpacity: 0.1
       },
-      onEachFeature
+      onEachFeature,
     };
 
     geoJson = L.geoJSON(dummyData.countries, geoJSONOptions).addTo(map);
-
 
   }
 
