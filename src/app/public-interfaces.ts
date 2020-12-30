@@ -20,3 +20,8 @@ export interface FeatureCountry extends GeoJSON.FeatureCollection  {
 export interface FeatureGroupCountry extends L.FeatureGroup {
   feature: FeatureCountry;
 }
+
+export interface CountryControl extends L.Control {
+  // Allow additional properties
+  [x: string]: any;
+}

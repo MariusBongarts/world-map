@@ -3,7 +3,7 @@ import 'mapbox-gl-leaflet';
 import * as L from 'leaflet';
 import { environment } from '../../environments/environment';
 import { dummyData } from '../../specs/dummy-data';
-import { FeatureCountry, FeatureGroupCountry } from '../public-interfaces';
+import { FeatureCountry, FeatureGroupCountry, CountryControl } from '../public-interfaces';
 
 @Component({
   selector: 'app-leaflet-map',
@@ -43,8 +43,7 @@ export class LeafletMapComponent implements AfterViewInit {
       accessToken: environment.mapboxGLApiKey,
     }).addTo(map);
 
-    // @ts-ignore - ignore 'This expression is not callable' error, because it is
-    const info = L.control();
+    const info: CountryControl = new L.Control();
 
     info.onAdd = function(innerMap: any) {
       this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
