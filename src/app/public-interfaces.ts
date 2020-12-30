@@ -7,15 +7,14 @@ export interface Audio extends Entity {
   base64: string;
 }
 
-export interface CountryProperties {
+export interface Country extends Entity {
   name: string;
-  id: string;
+  isoA3: string;
 }
 
-export interface FeatureCountry extends GeoJSON.Feature<GeoJSON.MultiPolygon, any>  {
-  properties: CountryProperties;
+export interface FeatureCountry extends GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon, any>  {
+  properties: Country;
 }
-
 
 /**
  * Control which is shown on the top-right corner in map to show information for highlighted country

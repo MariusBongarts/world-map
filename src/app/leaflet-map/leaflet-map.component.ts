@@ -3,7 +3,9 @@ import 'mapbox-gl-leaflet';
 import * as L from 'leaflet';
 import { environment } from '../../environments/environment';
 import { dummyData } from '../../specs/dummy-data';
-import { FeatureCountry, CountryControl } from '../public-interfaces';
+import { FeatureCountry, CountryControl, Country } from '../public-interfaces';
+import { CountryService } from './services/country.service';
+import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-leaflet-map',
@@ -16,7 +18,7 @@ export class LeafletMapComponent implements AfterViewInit {
   @ViewChild('map')
   private mapContainer!: ElementRef<HTMLElement>;
 
-  constructor() { }
+  constructor(private countryService: CountryService) { }
 
   public ngAfterViewInit(): void {
     const mapStyle = 'https://maps.geoapify.com/v1/styles/osm-carto/style.json';
