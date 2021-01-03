@@ -19,7 +19,7 @@ export class LeafletMapComponent implements AfterViewInit {
   @ViewChild('map')
   private mapContainer!: ElementRef<HTMLElement>;
 
-  countriesVisited$: Observable<Country[]> = of(
+  countriesVisited: Country[] =
     [
       {
         name: 'Germany',
@@ -30,7 +30,7 @@ export class LeafletMapComponent implements AfterViewInit {
         isoA3: 'FRA'
       },
     ]
-  );
+    ;
 
   constructor(private countryService: CountryService) { }
 
@@ -81,11 +81,23 @@ export class LeafletMapComponent implements AfterViewInit {
       const layer = e.target as CountryGroup;
       map.fitBounds(layer.getBounds());
     }
+
+    const addCountry = (country: Country) =>
+      this.countriesVisited.some(countryVisited =>
+        countryVisited.isoA3 === country.isoA3) ? this.countriesVisited =
+        this.countriesVisited.filter(countryVisited => countryVisited.isoA3 !== country.isoA3) :
+        this.countriesVisited = [...this.countriesVisited, country];
+
+    function addToVisited(e: any) {
+      const layer = e.target as CountryGroup;
+      addCountry(layer.feature.properties);
+      styleVisitedCountries(layer);
+    }
     let geoJson: L.GeoJSON;
     function resetHighlight(e: any) {
       const layer = e.target as CountryGroup;
-      const test = layer.feature;
       geoJson.resetStyle(layer);
+      styleVisitedCountries(layer);
     }
 
     function highlightFeature(e: any) {
@@ -101,30 +113,35 @@ export class LeafletMapComponent implements AfterViewInit {
 
       info.update(feature.properties);
 
+
       if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
         layer.bringToFront();
       }
     }
 
-    function onEachFeature(feature: FeatureCountry, layer: CountryGroup) {
+    const onEachFeature = (feature: FeatureCountry, layer: CountryGroup) => {
       layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight,
-        click: zoomToFeature,
+        click: addToVisited,
       });
-      if (feature.properties.name === 'Germany') {
+      styleVisitedCountries(layer);
+    };
+
+    const styleVisitedCountries = (layer: CountryGroup) => {
+      if (this.countriesVisited.some(countryVisited => countryVisited.isoA3 === layer.feature.properties.isoA3)) {
         layer.setStyle({ fillColor: '#ffff' });
       }
-    }
+    };
 
     const geoJSONOptions: L.GeoJSONOptions = {
       style: {
-        fillColor: '#666',
+        fillColor: '#242525',
         weight: 2,
         opacity: 1,
         color: 'white',
         dashArray: '3',
-        fillOpacity: 0.2
+        fillOpacity: 0.25
       },
       onEachFeature,
     };
