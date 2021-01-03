@@ -1,12 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import 'mapbox-gl-leaflet';
-import * as L from 'leaflet';
-import { environment } from '../../environments/environment';
-import { dummyData } from '../../specs/dummy-data';
-import { FeatureCountry, CountryControl, Country, CountryGroup } from '../public-interfaces';
-import { CountryService } from './services/country.service';
-import { first } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { LeafletMapService } from './leaflet-map.service';
 
 @Component({
   selector: 'app-leaflet-map',
@@ -14,140 +8,14 @@ import { Observable, of } from 'rxjs';
   styleUrls: ['./leaflet-map.component.scss']
 })
 export class LeafletMapComponent implements AfterViewInit {
-  private map!: L.Map;
 
   @ViewChild('map')
   private mapContainer!: ElementRef<HTMLElement>;
 
-  countriesVisited: Country[] =
-    [
-      {
-        name: 'Germany',
-        isoA3: 'DEU'
-      },
-      {
-        name: 'France',
-        isoA3: 'FRA'
-      },
-    ]
-    ;
-
-  constructor(private countryService: CountryService) { }
+  constructor(private leafletMapService: LeafletMapService) { }
 
   public ngAfterViewInit(): void {
-    const mapStyle = 'https://maps.geoapify.com/v1/styles/osm-carto/style.json';
-    const initialState = {
-      lng: 11,
-      lat: 49,
-      zoom: 4
-    };
-
-    const map = new L.Map(this.mapContainer.nativeElement).setView(
-      [initialState.lat, initialState.lng],
-      initialState.zoom,
-    );
-
-    // the attribution is required for the Geoapify Free tariff plan
-    map.attributionControl
-      .setPrefix('')
-      .addAttribution(
-        'Powered by <a href="https://www.geoapify.com/" target="_blank">Geoapify</a> | © OpenStreetMap <a href="https://www.openstreetmap.org/copyright" target="_blank">contributors</a>'
-      );
-
-    L.mapboxGL({
-      style: `${mapStyle}?apiKey=${environment.geoApifyKey}`,
-      accessToken: environment.mapboxGLApiKey,
-    }).addTo(map);
-
-    const info: CountryControl = new L.Control();
-
-    info.onAdd = function(innerMap: any) {
-      this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
-      this.update();
-      return this._div;
-    };
-
-    // method that we will use to update the control based on feature properties passed
-    info.update = function(props: FeatureCountry['properties']) {
-      this._div.innerHTML = props ? `
-      <h4>${props.name}</h4>
-      <span>Not visited</span>`
-        : 'Hover over a state';
-    };
-
-    info.addTo(map);
-
-    function zoomToFeature(e: any) {
-      const layer = e.target as CountryGroup;
-      map.fitBounds(layer.getBounds());
-    }
-
-    const addCountry = (country: Country) =>
-      this.countriesVisited.some(countryVisited =>
-        countryVisited.isoA3 === country.isoA3) ? this.countriesVisited =
-        this.countriesVisited.filter(countryVisited => countryVisited.isoA3 !== country.isoA3) :
-        this.countriesVisited = [...this.countriesVisited, country];
-
-    function addToVisited(e: any) {
-      const layer = e.target as CountryGroup;
-      addCountry(layer.feature.properties);
-      styleVisitedCountries(layer);
-    }
-    let geoJson: L.GeoJSON;
-    function resetHighlight(e: any) {
-      const layer = e.target as CountryGroup;
-      geoJson.resetStyle(layer);
-      styleVisitedCountries(layer);
-    }
-
-    function highlightFeature(e: any) {
-      const layer = e.target as CountryGroup;
-      const feature = e.target.feature as FeatureCountry;
-      layer.setStyle({
-        weight: 2,
-        color: '#666',
-        dashArray: '',
-        fillColor: '#666',
-        fillOpacity: 0
-      });
-
-      info.update(feature.properties);
-
-
-      if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-        layer.bringToFront();
-      }
-    }
-
-    const onEachFeature = (feature: FeatureCountry, layer: CountryGroup) => {
-      layer.on({
-        mouseover: highlightFeature,
-        mouseout: resetHighlight,
-        click: addToVisited,
-      });
-      styleVisitedCountries(layer);
-    };
-
-    const styleVisitedCountries = (layer: CountryGroup) => {
-      if (this.countriesVisited.some(countryVisited => countryVisited.isoA3 === layer.feature.properties.isoA3)) {
-        layer.setStyle({ fillColor: '#ffff' });
-      }
-    };
-
-    const geoJSONOptions: L.GeoJSONOptions = {
-      style: {
-        fillColor: '#242525',
-        weight: 2,
-        opacity: 1,
-        color: 'white',
-        dashArray: '3',
-        fillOpacity: 0.25
-      },
-      onEachFeature,
-    };
-
-    geoJson = L.geoJSON(dummyData.countries, geoJSONOptions).addTo(map);
-
+    this.leafletMapService.initMap(this.mapContainer);
   }
 
 }
