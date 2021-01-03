@@ -11,8 +11,11 @@ export interface Country extends Entity {
   name: string;
   isoA3: string;
 }
+export interface CountryGroup extends L.FeatureGroup {
+  feature: FeatureCountry;
+}
 
-export interface FeatureCountry extends GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon, any>  {
+export interface FeatureCountry extends GeoJSON.Feature<GeoJSON.MultiPoint, any>  {
   properties: Country;
 }
 

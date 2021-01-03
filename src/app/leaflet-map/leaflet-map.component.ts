@@ -3,9 +3,10 @@ import 'mapbox-gl-leaflet';
 import * as L from 'leaflet';
 import { environment } from '../../environments/environment';
 import { dummyData } from '../../specs/dummy-data';
-import { FeatureCountry, CountryControl, Country } from '../public-interfaces';
+import { FeatureCountry, CountryControl, Country, CountryGroup } from '../public-interfaces';
 import { CountryService } from './services/country.service';
 import { first } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-leaflet-map',
@@ -17,6 +18,19 @@ export class LeafletMapComponent implements AfterViewInit {
 
   @ViewChild('map')
   private mapContainer!: ElementRef<HTMLElement>;
+
+  countriesVisited$: Observable<Country[]> = of(
+    [
+      {
+        name: 'Germany',
+        isoA3: 'DEU'
+      },
+      {
+        name: 'France',
+        isoA3: 'FRA'
+      },
+    ]
+  );
 
   constructor(private countryService: CountryService) { }
 
@@ -64,17 +78,18 @@ export class LeafletMapComponent implements AfterViewInit {
     info.addTo(map);
 
     function zoomToFeature(e: any) {
-      const layer = e.target as L.FeatureGroup;
+      const layer = e.target as CountryGroup;
       map.fitBounds(layer.getBounds());
     }
     let geoJson: L.GeoJSON;
     function resetHighlight(e: any) {
-      const layer = e.target as L.FeatureGroup;
+      const layer = e.target as CountryGroup;
+      const test = layer.feature;
       geoJson.resetStyle(layer);
     }
 
     function highlightFeature(e: any) {
-      const layer = e.target as L.FeatureGroup;
+      const layer = e.target as CountryGroup;
       const feature = e.target.feature as FeatureCountry;
       layer.setStyle({
         weight: 2,
@@ -91,7 +106,7 @@ export class LeafletMapComponent implements AfterViewInit {
       }
     }
 
-    function onEachFeature(feature: FeatureCountry, layer: L.FeatureGroup) {
+    function onEachFeature(feature: FeatureCountry, layer: CountryGroup) {
       layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight,
