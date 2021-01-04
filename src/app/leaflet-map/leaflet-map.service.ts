@@ -5,21 +5,42 @@ import { dummyData } from '../../specs/dummy-data';
 import { Country, CountryControl, CountryGroup, FeatureCountry } from '../public-interfaces';
 import { environment } from '../../environments/environment';
 
+type CountryLeafletEvent = { target: CountryGroup };
 @Injectable({
   providedIn: 'root'
 })
 export class LeafletMapService {
 
-  private map = new BehaviorSubject<L.Map | undefined>(undefined);
+  private map$ = new BehaviorSubject<L.Map | undefined>(undefined);
 
-  /** Style which gets passe to `L.mapboxGL` method */
-  private mapStyle = 'https://maps.geoapify.com/v1/styles/osm-carto/style.json';
+  /** Style which gets passe to `L.mapboxGL` method. Visit: https://apidocs.geoapify.com/docs/maps/map-tiles/map-tiles */
+  private mapStyles = [
+    'https://maps.geoapify.com/v1/styles/dark-matter/style.json',
+    'https://maps.geoapify.com/v1/styles/dark-matter-dark-grey/style.json',
+    'https://maps.geoapify.com/v1/styles/dark-matter-brown/style.json',
+    'https://maps.geoapify.com/v1/styles/osm-carto/style.json',
+  ];
 
   /** Initial state of the leaflet map */
   private initialState = {
     lng: 11,
     lat: 49,
     zoom: 4
+  };
+
+  private defaultStyle = {
+    fillColor: '#242525',
+    weight: 1,
+    opacity: 0,
+    color: '#fffff00',
+    // dashArray: '3',
+    fillOpacity: 0.7
+  };
+  private highlightStyle: L.PathOptions | L.StyleFunction<any> | undefined = {
+    opacity: 1,
+    color: '#fffff00',
+    dashArray: '3',
+    fillOpacity: 0
   };
 
   info!: CountryControl;
@@ -29,15 +50,15 @@ export class LeafletMapService {
   private addControl(map: L.Map) {
     this.info = new L.Control();
 
-    this.info.onAdd = function (innerMap: any) {
-      this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
-      this.update();
-      return this._div;
+    this.info.onAdd = (innerMap: L.Map) => {
+      this.info._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+      this.info.update();
+      return this.info._div;
     };
 
     // method that we will use to update the control based on feature properties passed
-    this.info.update = function (props: Country) {
-      this._div.innerHTML = props ? `
+    this.info.update = (props: Country) => {
+      this.info._div.innerHTML = props ? `
       <h4>${props.name}</h4>
       <span>Not visited</span>`
         : 'Hover over a state';
@@ -60,7 +81,7 @@ export class LeafletMapService {
       );
 
     L.mapboxGL({
-      style: `${this.mapStyle}?apiKey=${environment.geoApifyKey}`,
+      style: `${this.mapStyles[2]}?apiKey=${environment.geoApifyKey}`,
       accessToken: environment.mapboxGLApiKey,
     }).addTo(map);
 
@@ -72,27 +93,29 @@ export class LeafletMapService {
         dummyData.countriesVisited.filter(countryVisited => countryVisited.isoA3 !== country.isoA3) :
         dummyData.countriesVisited = [...dummyData.countriesVisited, country];
 
-    function addToVisited(e: any) {
-      const layer = e.target as CountryGroup;
+    const toggleVisited = (e: CountryLeafletEvent) => {
+      const layer = e.target;
       addCountry(layer.feature.properties);
-      styleVisitedCountries(layer);
-    }
+      styleVisitedCountries(layer, {
+        ...this.highlightStyle, color: '#ffffff', opacity: 1
+      });
+    };
     let geoJson: L.GeoJSON;
-    function resetHighlight(e: any) {
-      const layer = e.target as CountryGroup;
+    function resetHighlight(e: CountryLeafletEvent) {
+      const layer = e.target;
       geoJson.resetStyle(layer);
       styleVisitedCountries(layer);
     }
 
-    const highlightFeature = (e: any) => {
-      const layer = e.target as CountryGroup;
-      layer.setStyle({
-        weight: 2,
-        color: '#666',
-        dashArray: '',
-        fillColor: '#666',
-        fillOpacity: 0
+    const highlightFeature = (e: CountryLeafletEvent) => {
+      const layer = e.target;
+
+      styleVisitedCountries(layer, {
+        color: '#ffffff',
+        opacity: 1
       });
+
+      // layer.setStyle({color: '#ffffff', opacity: 1});
 
       this.info.update(layer.feature.properties);
 
@@ -100,37 +123,29 @@ export class LeafletMapService {
       if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
         layer.bringToFront();
       }
-    }
+    };
 
     const onEachFeature = (feature: FeatureCountry, layer: CountryGroup) => {
       layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight,
-        click: addToVisited,
+        click: toggleVisited,
       });
       styleVisitedCountries(layer);
     };
 
-    const styleVisitedCountries = (layer: CountryGroup) => {
-      if (dummyData.countriesVisited.some(countryVisited => countryVisited.isoA3 === layer.feature.properties.isoA3)) {
-        layer.setStyle({ fillColor: '#ffff' });
-      }
+    const styleVisitedCountries = (layer: CountryGroup, overrideStyle?: L.PathOptions | L.StyleFunction<any> | undefined) => {
+      const countryIsVisited = dummyData.countriesVisited.some(countryVisited => countryVisited.isoA3 === layer.feature.properties.isoA3);
+      layer.setStyle({ ...overrideStyle, fillOpacity: countryIsVisited ? 0 : this.defaultStyle.fillOpacity });
     };
 
     const geoJSONOptions: L.GeoJSONOptions = {
-      style: {
-        fillColor: '#242525',
-        weight: 2,
-        opacity: 1,
-        color: 'white',
-        dashArray: '3',
-        fillOpacity: 0.25
-      },
+      style: this.defaultStyle,
       onEachFeature,
     };
 
     geoJson = L.geoJSON(dummyData.countries, geoJSONOptions).addTo(map);
 
-    this.map.next(map);
+    this.map$.next(map);
   }
 }
