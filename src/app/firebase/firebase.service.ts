@@ -1,7 +1,7 @@
 import { Entity } from '../public-interfaces';
 import { IFirebaseService } from './firebase.interface';
 import { AngularFirestoreCollection, AngularFirestore } from '@angular/fire/firestore';
-import { map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 export abstract class FirebaseService<T extends Entity> implements IFirebaseService<T> {
 

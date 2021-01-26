@@ -1,9 +1,12 @@
-import { ElementRef, Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { ElementRef, Injectable, OnInit } from '@angular/core';
+import { asyncScheduler, BehaviorSubject } from 'rxjs';
 import * as L from 'leaflet';
-import { dummyData } from '../../specs/dummy-data';
-import { Country, CountryControl, CountryGroup, FeatureCountry } from '../public-interfaces';
+import { jsonData } from '../../specs/dummy-data';
+import { Country, CountryControl, CountryGroup, CountryVisit, FeatureCountry } from '../public-interfaces';
 import { environment } from '../../environments/environment';
+import { CountryVisitService } from '../shared/services/country-visit.service';
+import { AuthService } from '../shared/services/auth.service';
+import { filter, first, observeOn } from 'rxjs/operators';
 
 type CountryLeafletEvent = { target: CountryGroup };
 @Injectable({
@@ -12,6 +15,8 @@ type CountryLeafletEvent = { target: CountryGroup };
 export class LeafletMapService {
 
   private map$ = new BehaviorSubject<L.Map | undefined>(undefined);
+
+  private countriesVisited: CountryVisit[] = [];
 
   /** Style which gets passe to `L.mapboxGL` method. Visit: https://apidocs.geoapify.com/docs/maps/map-tiles/map-tiles */
   private mapStyles = [
@@ -34,7 +39,7 @@ export class LeafletMapService {
     opacity: 0,
     color: '#fffff00',
     // dashArray: '3',
-    fillOpacity: 0.7
+    fillOpacity: 0.8
   };
   private highlightStyle: L.PathOptions | L.StyleFunction<any> | undefined = {
     opacity: 1,
@@ -45,7 +50,9 @@ export class LeafletMapService {
 
   info!: CountryControl;
 
-  constructor() { }
+  constructor(private countryVisitService: CountryVisitService) {
+  }
+
 
   private addControl(map: L.Map) {
     this.info = new L.Control();
@@ -87,35 +94,24 @@ export class LeafletMapService {
 
     this.addControl(map);
 
-    const addCountry = (country: Country) =>
-      dummyData.countriesVisited.some(countryVisited =>
-        countryVisited.isoA3 === country.isoA3) ? dummyData.countriesVisited =
-        dummyData.countriesVisited.filter(countryVisited => countryVisited.isoA3 !== country.isoA3) :
-        dummyData.countriesVisited = [...dummyData.countriesVisited, country];
+    const addCountry = async (country: Country) => {
+      await this.countryVisitService.addOrDelete({ countryId: country.isoA3 });
+    };
 
     const toggleVisited = (e: CountryLeafletEvent) => {
       const layer = e.target;
       addCountry(layer.feature.properties);
-      styleVisitedCountries(layer, {
-        ...this.highlightStyle, color: '#ffffff', opacity: 1
-      });
     };
     let geoJson: L.GeoJSON;
-    function resetHighlight(e: CountryLeafletEvent) {
+    const resetHighlight = (e: CountryLeafletEvent) => {
       const layer = e.target;
-      geoJson.resetStyle(layer);
-      styleVisitedCountries(layer);
-    }
+      layer.setStyle({ color: this.defaultStyle.color, opacity: this.defaultStyle.opacity });
+    };
 
     const highlightFeature = (e: CountryLeafletEvent) => {
       const layer = e.target;
 
-      styleVisitedCountries(layer, {
-        color: '#ffffff',
-        opacity: 1
-      });
-
-      // layer.setStyle({color: '#ffffff', opacity: 1});
+      layer.setStyle({ color: '#ffffff', opacity: 1 });
 
       this.info.update(layer.feature.properties);
 
@@ -135,8 +131,16 @@ export class LeafletMapService {
     };
 
     const styleVisitedCountries = (layer: CountryGroup, overrideStyle?: L.PathOptions | L.StyleFunction<any> | undefined) => {
-      const countryIsVisited = dummyData.countriesVisited.some(countryVisited => countryVisited.isoA3 === layer.feature.properties.isoA3);
-      layer.setStyle({ ...overrideStyle, fillOpacity: countryIsVisited ? 0 : this.defaultStyle.fillOpacity });
+      this.countryVisitService.getVisitedCountriesOfUser().pipe(filter(countries => !!countries.length)).subscribe(
+        countriesVisited => {
+          const countryWasVisited = this.countriesVisited.some(countryVisited =>
+            countryVisited.countryId === layer.feature.properties.isoA3);
+          const countryIsVisited = countriesVisited.some(countryVisited => countryVisited.countryId === layer.feature.properties.isoA3);
+          // Style only countries whose visited flag has changed
+          if ((countryWasVisited && !countryIsVisited) || (countryIsVisited && !countryWasVisited)) {
+            layer.setStyle({ ...overrideStyle, fillOpacity: countryIsVisited ? 0 : this.defaultStyle.fillOpacity });
+          }
+        });
     };
 
     const geoJSONOptions: L.GeoJSONOptions = {
@@ -144,8 +148,16 @@ export class LeafletMapService {
       onEachFeature,
     };
 
-    geoJson = L.geoJSON(dummyData.countries, geoJSONOptions).addTo(map);
+    geoJson = L.geoJSON(jsonData.countries, geoJSONOptions).addTo(map);
 
     this.map$.next(map);
+
+    // Async Scheduler to wait for the initial styling of visited countries
+    this.countryVisitService.getVisitedCountriesOfUser()
+      .pipe(filter(countries => !!countries.length), observeOn(asyncScheduler))
+      .subscribe(countriesVisited => {
+        this.countriesVisited = countriesVisited;
+      });
+
   }
 }

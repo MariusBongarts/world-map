@@ -1,15 +1,20 @@
 
 export interface Entity {
   id?: string;
+  userId: string;
 }
 
 export interface Audio extends Entity {
   base64: string;
 }
 
-export interface Country extends Entity {
+export interface Country {
   name: string;
   isoA3: string;
+}
+
+export interface CountryVisit extends Entity {
+  countryId: Country['isoA3'];
 }
 export interface CountryGroup extends L.FeatureGroup {
   feature: FeatureCountry;
