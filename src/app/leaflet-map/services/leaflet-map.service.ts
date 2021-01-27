@@ -100,6 +100,7 @@ export class LeafletMapService {
 
     const toggleVisited = (e: CountryLeafletEvent) => {
       const layer = e.target;
+      layer.setStyle({ fillOpacity: !isCountryVisited(layer, this.countriesVisited) ? 0 : this.defaultStyle.fillOpacity });
       addCountry(layer.feature.properties);
     };
     let geoJson: L.GeoJSON;
@@ -130,12 +131,14 @@ export class LeafletMapService {
       styleVisitedCountries(layer);
     };
 
+    const isCountryVisited = (layer: CountryGroup, countriesVisited: CountryVisit[]) =>
+      countriesVisited.some(countryVisited => countryVisited.countryId === layer.feature.properties.isoA3);
+
     const styleVisitedCountries = (layer: CountryGroup, overrideStyle?: L.PathOptions | L.StyleFunction<any> | undefined) => {
       this.countryVisitService.getVisitedCountriesOfUser().subscribe(
         countriesVisited => {
-          const countryWasVisited = this.countriesVisited.some(countryVisited =>
-            countryVisited.countryId === layer.feature.properties.isoA3);
-          const countryIsVisited = countriesVisited.some(countryVisited => countryVisited.countryId === layer.feature.properties.isoA3);
+          const countryWasVisited = isCountryVisited(layer, this.countriesVisited);
+          const countryIsVisited = isCountryVisited(layer, countriesVisited);
           // Style only countries whose visited flag has changed
           if ((countryWasVisited && !countryIsVisited) || (countryIsVisited && !countryWasVisited)) {
             layer.setStyle({ ...overrideStyle, fillOpacity: countryIsVisited ? 0 : this.defaultStyle.fillOpacity });
