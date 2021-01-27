@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import 'mapbox-gl-leaflet';
-import { LeafletMapService } from './leaflet-map.service';
+import { LeafletMapService } from './services/leaflet-map.service';
 
 @Component({
   selector: 'app-leaflet-map',

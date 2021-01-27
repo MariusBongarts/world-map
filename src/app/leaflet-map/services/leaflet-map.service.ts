@@ -1,11 +1,11 @@
 import { ElementRef, Injectable, OnInit } from '@angular/core';
 import { asyncScheduler, BehaviorSubject } from 'rxjs';
 import * as L from 'leaflet';
-import { jsonData } from '../../specs/dummy-data';
-import { Country, CountryControl, CountryGroup, CountryVisit, FeatureCountry } from '../public-interfaces';
-import { environment } from '../../environments/environment';
-import { CountryVisitService } from '../shared/services/country-visit.service';
-import { AuthService } from '../shared/services/auth.service';
+import { jsonData } from '../../../specs/dummy-data';
+import { Country, CountryControl, CountryGroup, CountryVisit, FeatureCountry } from '../../public-interfaces';
+import { environment } from '../../../environments/environment';
+import { CountryVisitService } from '../../shared/services/country-visit.service';
+import { AuthService } from '../../shared/services/auth.service';
 import { filter, first, observeOn } from 'rxjs/operators';
 
 type CountryLeafletEvent = { target: CountryGroup };
@@ -131,7 +131,7 @@ export class LeafletMapService {
     };
 
     const styleVisitedCountries = (layer: CountryGroup, overrideStyle?: L.PathOptions | L.StyleFunction<any> | undefined) => {
-      this.countryVisitService.getVisitedCountriesOfUser().pipe(filter(countries => !!countries.length)).subscribe(
+      this.countryVisitService.getVisitedCountriesOfUser().subscribe(
         countriesVisited => {
           const countryWasVisited = this.countriesVisited.some(countryVisited =>
             countryVisited.countryId === layer.feature.properties.isoA3);
@@ -154,7 +154,7 @@ export class LeafletMapService {
 
     // Async Scheduler to wait for the initial styling of visited countries
     this.countryVisitService.getVisitedCountriesOfUser()
-      .pipe(filter(countries => !!countries.length), observeOn(asyncScheduler))
+      .pipe(filter(countries => !!countries.length))
       .subscribe(countriesVisited => {
         this.countriesVisited = countriesVisited;
       });

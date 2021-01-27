@@ -49,6 +49,16 @@ export class AuthService {
     return (await this.afAuth.currentUser)?.sendEmailVerification();
   }
 
+  // Reset Forggot password
+  async sendForgotPasswordEmail(passwordResetEmail: string) {
+    return this.afAuth.sendPasswordResetEmail(passwordResetEmail)
+      .then(() => {
+        window.alert('Password reset email sent, check your inbox.');
+      }).catch((error) => {
+        window.alert(error);
+      });
+  }
+
   async sendPasswordResetEmail(passwordResetEmail: string) {
     return await this.afAuth.sendPasswordResetEmail(passwordResetEmail);
   }
