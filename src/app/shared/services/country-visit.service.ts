@@ -20,6 +20,9 @@ export class CountryVisitService extends FirebaseService<CountryVisit> {
       countriesVisited.filter(countryVisit => countryVisit.userId === this.authService.user.getValue()?.uid)));
   }
 
+  /**
+   * Marks a country as visited when it´s not visited yet. Else it removes the visited flag.
+   */
   public async addOrDelete(item: Omit<CountryVisit, 'userId'>): Promise<CountryVisit | void> {
     return new Promise(res => {
       this.getVisitedCountriesOfUser().pipe(first()).subscribe(countriesVisited => {
@@ -27,7 +30,6 @@ export class CountryVisitService extends FirebaseService<CountryVisit> {
         if (!countryIsVisited) { res(super.add({ ...item, userId: this.authService.user.getValue()?.uid || '' })); }
         if (countryIsVisited && countryIsVisited.id) { res(super.delete(countryIsVisited.id)); }
       });
-
     });
   }
 

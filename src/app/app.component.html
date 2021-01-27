@@ -1,10 +1,17 @@
-<div class="container-fluid p-0 m-0 app-main">
-  <div class="row p-0 m-0">
-    <div class="col-lg-8 col-12 p-0 m-0">
-      <router-outlet name="leaflet-map"></router-outlet>
-    </div>
-    <div class="col-lg-4 col-12 p-0 m-0">
-      <router-outlet></router-outlet>
-    </div>
-  </div>
-</div>
+<mat-drawer-container class="example-container" [hasBackdrop]="false">
+  <mat-drawer #drawer mode="side" opened position="end">
+    <ng-template [ngTemplateOutlet]="drawerToggle" [ngTemplateOutletContext]="{icon:'close'}"></ng-template>
+    <router-outlet></router-outlet>
+  </mat-drawer>
+  <mat-drawer-content>
+    <ng-template *ngIf="!drawer.opened" [ngTemplateOutlet]="drawerToggle" [ngTemplateOutletContext]="{icon:'menu'}"></ng-template>
+    <router-outlet name="leaflet-map"></router-outlet>
+  </mat-drawer-content>
+</mat-drawer-container>
+
+<ng-template #drawerToggle let-icon='icon'>
+  <button mat-mini-fab color="primary" (click)="drawer.toggle()" class="drawer-toggle-btn">
+    <mat-icon>{{ icon }}</mat-icon>
+  </button>
+</ng-template>
+
