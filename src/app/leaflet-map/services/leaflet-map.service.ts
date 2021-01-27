@@ -100,7 +100,6 @@ export class LeafletMapService {
 
     const toggleVisited = (e: CountryLeafletEvent) => {
       const layer = e.target;
-      layer.setStyle({ fillOpacity: !isCountryVisited(layer, this.countriesVisited) ? 0 : this.defaultStyle.fillOpacity });
       addCountry(layer.feature.properties);
     };
     let geoJson: L.GeoJSON;
@@ -128,7 +127,7 @@ export class LeafletMapService {
         mouseout: resetHighlight,
         click: toggleVisited,
       });
-      styleVisitedCountries(layer);
+      // styleVisitedCountries(layer);
     };
 
     const isCountryVisited = (layer: CountryGroup, countriesVisited: CountryVisit[]) =>
@@ -155,12 +154,25 @@ export class LeafletMapService {
 
     this.map$.next(map);
 
-    // Async Scheduler to wait for the initial styling of visited countries
-    this.countryVisitService.getVisitedCountriesOfUser()
-      .pipe(filter(countries => !!countries.length))
-      .subscribe(countriesVisited => {
+    this.countryVisitService.getVisitedCountriesOfUser().subscribe(
+      countriesVisited => {
+        (geoJson.getLayers() as CountryGroup[]).forEach(layer => {
+          const countryWasVisited = isCountryVisited(layer, this.countriesVisited);
+          const countryIsVisited = isCountryVisited(layer, countriesVisited);
+          // Style only countries whose visited flag has changed
+          if ((countryWasVisited && !countryIsVisited) || (countryIsVisited && !countryWasVisited)) {
+            layer.setStyle({ fillOpacity: countryIsVisited ? 0 : this.defaultStyle.fillOpacity });
+          }
+        });
         this.countriesVisited = countriesVisited;
       });
+
+    // Async Scheduler to wait for the initial styling of visited countries
+    // this.countryVisitService.getVisitedCountriesOfUser()
+    //   .pipe(filter(countries => !!countries.length))
+    //   .subscribe(countriesVisited => {
+    //     this.countriesVisited = countriesVisited;
+    //   });
 
   }
 }
