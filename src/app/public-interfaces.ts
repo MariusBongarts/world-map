@@ -20,7 +20,7 @@ export interface CountryGroup extends L.FeatureGroup {
   feature: FeatureCountry;
 }
 
-export interface FeatureCountry extends GeoJSON.Feature<GeoJSON.MultiPoint, any>  {
+export interface FeatureCountry extends GeoJSON.Feature<GeoJSON.MultiPoint, any> {
   properties: Country;
 }
 
@@ -31,3 +31,4 @@ export interface CountryControl extends L.Control {
   // Allow additional properties
   [prop: string]: any;
 }
+export type CountryLeafletEvent = { target: CountryGroup };
