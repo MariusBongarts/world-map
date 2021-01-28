@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { takeUntil } from 'rxjs/operators';
+import { jsonData } from '../../../specs/dummy-data';
 import { Country, CountryGroup, CountryVisit, FeatureCountry } from '../../public-interfaces';
 import { CountryVisitService } from '../../shared/services/country-visit.service';
 import { LeafletEventService } from './leaflet-event.service';
-import { LeafletStyleService } from './leaflet-style.service';
 
 @Injectable({
   providedIn: 'root'
@@ -42,5 +41,9 @@ export class LeafletCountryService {
     this.leafletEventService.subscribeToLayerEvents('clickLayer').subscribe(event => {
       this.countryVisitService.addOrDelete({ countryId: event.data.feature.properties.isoA3 });
     });
+  }
+
+  public getFlagUrlForCountry(country: Pick<Country, 'isoA3'>) {
+    return jsonData.countryFlags.find(countryFlag => countryFlag.alpha3 === country.isoA3)?.file_url || '';
   }
 }
