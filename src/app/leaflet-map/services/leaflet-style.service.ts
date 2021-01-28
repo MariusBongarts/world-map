@@ -12,6 +12,14 @@ export class LeafletStyleService {
   constructor(private leafletControlService: LeafletControlService, private leafletEventService: LeafletEventService) {
   }
 
+  /** Style which gets passe to `L.mapboxGL` method. Visit: https://apidocs.geoapify.com/docs/maps/map-tiles/map-tiles */
+  public mapStyles = [
+    'https://maps.geoapify.com/v1/styles/dark-matter/style.json',
+    'https://maps.geoapify.com/v1/styles/dark-matter-dark-grey/style.json',
+    'https://maps.geoapify.com/v1/styles/dark-matter-brown/style.json',
+    'https://maps.geoapify.com/v1/styles/osm-carto/style.json',
+  ];
+
   public defaultStyle = {
     fillColor: '#242525',
     weight: 1,

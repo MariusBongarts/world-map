@@ -1,17 +1,13 @@
-import { ElementRef, Injectable, OnInit } from '@angular/core';
-import { asyncScheduler, BehaviorSubject, Subject } from 'rxjs';
+import { ElementRef, Injectable } from '@angular/core';
+import {  BehaviorSubject } from 'rxjs';
 import * as L from 'leaflet';
 import { jsonData } from '../../../specs/dummy-data';
-import { Country, CountryControl, CountryGroup, CountryLeafletEvent, CountryVisit, FeatureCountry } from '../../public-interfaces';
+import { CountryGroup, FeatureCountry } from '../../public-interfaces';
 import { environment } from '../../../environments/environment';
-import { CountryVisitService } from '../../shared/services/country-visit.service';
-import { AuthService } from '../../shared/services/auth.service';
-import { filter, first, observeOn, takeUntil } from 'rxjs/operators';
 import { LeafletCountryService } from './leaflet-country.service';
 import { LeafletControlService } from './leaflet-control.service';
 import { LeafletEventService } from './leaflet-event.service';
 import { LeafletStyleService } from './leaflet-style.service';
-
 
 @Injectable({
   providedIn: 'root'
@@ -21,14 +17,6 @@ export class LeafletMapService {
   public map$ = new BehaviorSubject<L.Map | undefined>(undefined);
 
   public geoJson!: L.GeoJSON;
-
-  /** Style which gets passe to `L.mapboxGL` method. Visit: https://apidocs.geoapify.com/docs/maps/map-tiles/map-tiles */
-  private mapStyles = [
-    'https://maps.geoapify.com/v1/styles/dark-matter/style.json',
-    'https://maps.geoapify.com/v1/styles/dark-matter-dark-grey/style.json',
-    'https://maps.geoapify.com/v1/styles/dark-matter-brown/style.json',
-    'https://maps.geoapify.com/v1/styles/osm-carto/style.json',
-  ];
 
   /** Initial state of the leaflet map */
   private initialState = {
@@ -51,7 +39,7 @@ export class LeafletMapService {
     );
 
     L.mapboxGL({
-      style: `${this.mapStyles[3]}?apiKey=${environment.geoApifyKey}`,
+      style: `${this.leafletStyleService.mapStyles[3]}?apiKey=${environment.geoApifyKey}`,
       accessToken: environment.mapboxGLApiKey,
     }).addTo(map);
 
