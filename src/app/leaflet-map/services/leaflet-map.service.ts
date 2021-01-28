@@ -62,7 +62,7 @@ export class LeafletMapService {
 
     this.map$.next(map);
 
-    this.leafletCountryService.colorVisitedCountries(this.geoJson);
+    this.leafletCountryService.checkForCountryChanges(this.geoJson);
 
     this.leafletStyleService.initStyles();
   }

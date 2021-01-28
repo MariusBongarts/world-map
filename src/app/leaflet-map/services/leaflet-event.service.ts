@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { FeatureGroup } from 'leaflet';
 import { Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { Country, CountryGroup, CountryLeafletEvent } from '../../public-interfaces';
+import { CountryGroup, CountryLeafletEvent } from '../../public-interfaces';
 
 type LayerEventTypes = 'clickLayer' | 'mouseoverLayer' | 'mouseoutLayer';
 type CountryEventTypes = 'countryAdded' | 'countryRemoved';

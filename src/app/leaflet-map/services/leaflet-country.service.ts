@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
-import { CountryGroup, CountryVisit, FeatureCountry } from '../../public-interfaces';
+import { Country, CountryGroup, CountryVisit, FeatureCountry } from '../../public-interfaces';
 import { CountryVisitService } from '../../shared/services/country-visit.service';
 import { LeafletEventService } from './leaflet-event.service';
 import { LeafletStyleService } from './leaflet-style.service';
@@ -13,19 +13,20 @@ export class LeafletCountryService {
   private countriesVisited: CountryVisit[] = [];
 
   constructor(private countryVisitService: CountryVisitService,
-              private leafletEventService: LeafletEventService,
-              private leafletStyleService: LeafletStyleService) {
+              private leafletEventService: LeafletEventService) {
   }
 
-  public colorVisitedCountries(geoJson: L.GeoJSON) {
-    const isCountryVisited = (layer: CountryGroup, countriesVisited: CountryVisit[]) =>
-      countriesVisited.some(countryVisited => countryVisited.countryId === layer.feature.properties.isoA3);
+  public isCountryVisited(country: Pick<Country, 'isoA3'>, countriesVisited?: CountryVisit[]) {
+    return (countriesVisited || this.countriesVisited).some(countryVisited => countryVisited.countryId === country.isoA3);
+  }
+
+  public checkForCountryChanges(geoJson: L.GeoJSON) {
 
     this.countryVisitService.getVisitedCountriesOfUser().subscribe(
       countriesVisited => {
         (geoJson.getLayers() as CountryGroup[]).forEach(layer => {
-          const countryWasVisited = isCountryVisited(layer, this.countriesVisited);
-          const countryIsVisited = isCountryVisited(layer, countriesVisited);
+          const countryWasVisited = this.isCountryVisited({ isoA3: layer.feature.properties.isoA3 }, this.countriesVisited);
+          const countryIsVisited = this.isCountryVisited({ isoA3: layer.feature.properties.isoA3 }, countriesVisited);
           // Style only countries whose visited flag has changed
           if ((countryWasVisited && !countryIsVisited) || (countryIsVisited && !countryWasVisited)) {
             countryIsVisited ? this.leafletEventService.countryAdded(layer) : this.leafletEventService.countryRemoved(layer);
