@@ -1,5 +1,5 @@
-<mat-drawer-container class="example-container" [hasBackdrop]="false">
-  <mat-drawer #drawer mode="side" opened position="end">
+<mat-drawer-container class="example-container" opened [hasBackdrop]="false">
+  <mat-drawer #drawer mode="side" position="end">
     <ng-template [ngTemplateOutlet]="drawerToggle" [ngTemplateOutletContext]="{icon:'close'}"></ng-template>
     <router-outlet></router-outlet>
   </mat-drawer>

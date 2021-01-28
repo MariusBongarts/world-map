@@ -75,7 +75,7 @@ export class LeafletMapService {
 
 
   public initMap(mapContainer: ElementRef<HTMLElement>) {
-    const map = new L.Map(mapContainer.nativeElement, { preferCanvas: true }).setView(
+    const map = new L.Map(mapContainer.nativeElement, { preferCanvas: true, trackResize: false, minZoom: 4 }).setView(
       [this.initialState.lat, this.initialState.lng],
       this.initialState.zoom,
     );

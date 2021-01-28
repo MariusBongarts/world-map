@@ -8,8 +8,8 @@
 
 mat-drawer {
   border: none !important;
+
   &.mat-drawer-opened {
-    min-width: 30%;
     .drawer-toggle-btn {
       left: 0px;
     }
