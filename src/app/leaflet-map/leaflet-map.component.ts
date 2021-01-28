@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import 'mapbox-gl-leaflet';
+import { AuthService } from '../shared/services/auth.service';
 import { LeafletMapService } from './services/leaflet-map.service';
 
 @Component({
@@ -12,10 +13,10 @@ export class LeafletMapComponent implements AfterViewInit {
   @ViewChild('map')
   private mapContainer!: ElementRef<HTMLElement>;
 
-  constructor(private leafletMapService: LeafletMapService) { }
+  constructor(private leafletMapService: LeafletMapService, private authService: AuthService) { }
 
   public ngAfterViewInit(): void {
-    this.leafletMapService.initMap(this.mapContainer);
+      this.leafletMapService.initMap(this.mapContainer);
   }
 
 }

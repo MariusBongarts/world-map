@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
-import { first, map } from 'rxjs/operators';
+import { combineLatest, merge, Observable, zip } from 'rxjs';
+import { combineAll, first, map } from 'rxjs/operators';
 import { FirebaseService } from '../../firebase/firebase.service';
 import { Country, CountryVisit } from '../../public-interfaces';
 import { AuthService } from './auth.service';
@@ -16,8 +16,9 @@ export class CountryVisitService extends FirebaseService<CountryVisit> {
   }
 
   public getVisitedCountriesOfUser(): Observable<CountryVisit[]> {
-    return super.list().pipe(map(countriesVisited =>
-      countriesVisited.filter(countryVisit => countryVisit.userId === this.authService.user.getValue()?.uid)));
+    return combineLatest([this.authService.user, super.list()]).pipe(map(([user, countriesVisited]) => {
+      return countriesVisited.filter(countryVisit => countryVisit.userId === user?.uid);
+    }));
   }
 
   /**

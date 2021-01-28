@@ -13,12 +13,12 @@ export class AuthService {
   constructor(public afAuth: AngularFireAuth, public router: Router) {
     this.afAuth.authState.subscribe(async (user) => {
       if (user) {
-        this.user.next(user);
-        localStorage.setItem('user', JSON.stringify(this.user));
+        localStorage.setItem('user', JSON.stringify(user));
         await this.router.navigate(['dashboard']);
       } else {
         localStorage.setItem('user', '');
       }
+      this.user.next(user);
     });
   }
 
