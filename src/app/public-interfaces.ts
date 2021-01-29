@@ -11,6 +11,7 @@ export interface Audio extends Entity {
 export interface Country {
   name: string;
   isoA3: string;
+  flagUrl: string;
 }
 
 export interface CountryVisit extends Entity {

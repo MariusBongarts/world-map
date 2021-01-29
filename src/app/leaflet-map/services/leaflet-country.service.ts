@@ -41,8 +41,4 @@ export class LeafletCountryService {
       this.countryVisitService.addOrDelete({ countryId: event.data.feature.properties.isoA3 });
     });
   }
-
-  public getFlagUrlForCountry(country: Pick<Country, 'isoA3'>) {
-    return jsonData.countryFlags.find(countryFlag => countryFlag.alpha3 === country.isoA3)?.file_url || '';
-  }
 }
