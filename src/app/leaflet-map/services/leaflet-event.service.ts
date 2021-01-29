@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { CountryGroup, CountryLeafletEvent } from '../../public-interfaces';
 
 type LayerEventTypes = 'clickLayer' | 'mouseoverLayer' | 'mouseoutLayer';
 type CountryEventTypes = 'countryAdded' | 'countryRemoved';
 
+type AllEventTypes = LayerEventTypes | CountryEventTypes;
 interface LeafletEvent<T> {
   data: T;
   eventType: string;
@@ -18,36 +19,34 @@ interface CountryEvent extends LeafletEvent<CountryGroup> {
   eventType: CountryEventTypes;
 }
 
+type TypeToInterface<Type extends AllEventTypes> = Type extends LayerEventTypes ? LayerEvent : CountryEvent;
+
+type AllEvents = LayerEvent | CountryEvent;
+
 @Injectable({
   providedIn: 'root'
 })
 export class LeafletEventService {
-  public layerEvent$ = new Subject<LayerEvent>();
-  public countryEvent$ = new Subject<CountryEvent>();
+  public event$ = new Subject<AllEvents>();
 
-  constructor() { }
-
-  public subscribeToLayerEvents(eventType: LayerEventTypes) {
-    return this.layerEvent$.pipe(filter(event => event.eventType === eventType));
-  }
-  public subscribeToCountryEvents(eventType: CountryEventTypes) {
-    return this.countryEvent$.pipe(filter(event => event.eventType === eventType));
+  public subscribe<Type extends AllEventTypes>(eventType: Type) {
+    return this.event$.pipe(filter(event => event.eventType === eventType)) as Observable<TypeToInterface<Type>>;
   }
 
   public mouseoverLayer = (countryLeafletEvent: CountryLeafletEvent) => {
-    this.layerEvent$.next({ data: countryLeafletEvent.target, eventType: 'mouseoverLayer' });
+    this.event$.next({ data: countryLeafletEvent.target, eventType: 'mouseoverLayer' });
   }
   public mouseoutLayer = (countryLeafletEvent: CountryLeafletEvent) => {
-    this.layerEvent$.next({ data: countryLeafletEvent.target, eventType: 'mouseoutLayer' });
+    this.event$.next({ data: countryLeafletEvent.target, eventType: 'mouseoutLayer' });
   }
   public clickLayer = (countryLeafletEvent: CountryLeafletEvent) => {
-    this.layerEvent$.next({ data: countryLeafletEvent.target, eventType: 'clickLayer' });
+    this.event$.next({ data: countryLeafletEvent.target, eventType: 'clickLayer' });
   }
   public countryAdded = (countryGroup: CountryGroup) => {
-    this.countryEvent$.next({ data: countryGroup, eventType: 'countryAdded' });
+    this.event$.next({ data: countryGroup, eventType: 'countryAdded' });
   }
   public countryRemoved = (countryGroup: CountryGroup) => {
-    this.countryEvent$.next({ data: countryGroup, eventType: 'countryRemoved' });
+    this.event$.next({ data: countryGroup, eventType: 'countryRemoved' });
   }
 
 }

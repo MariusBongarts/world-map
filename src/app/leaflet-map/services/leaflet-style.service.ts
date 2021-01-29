@@ -33,10 +33,10 @@ export class LeafletStyleService {
   };
 
   public initStyles() {
-    this.leafletEventService.subscribeToLayerEvents('mouseoverLayer').subscribe(event => this.highlightFeature(event.data));
-    this.leafletEventService.subscribeToLayerEvents('mouseoutLayer').subscribe(event => this.resetHighlight(event.data));
-    this.leafletEventService.subscribeToCountryEvents('countryAdded').subscribe(event => this.markAsVisited(event.data));
-    this.leafletEventService.subscribeToCountryEvents('countryRemoved').subscribe(event => this.markAsUnvisited(event.data));
+    this.leafletEventService.subscribe('mouseoverLayer').subscribe(event => this.highlightFeature(event.data));
+    this.leafletEventService.subscribe('mouseoutLayer').subscribe(event => this.resetHighlight(event.data));
+    this.leafletEventService.subscribe('countryAdded').subscribe(event => this.markAsVisited(event.data));
+    this.leafletEventService.subscribe('countryRemoved').subscribe(event => this.markAsUnvisited(event.data));
   }
 
   private resetHighlight(countryGroup: CountryGroup) {

@@ -38,7 +38,7 @@ export class LeafletCountryService {
   }
 
   private listenForEvents() {
-    this.leafletEventService.subscribeToLayerEvents('clickLayer').subscribe(event => {
+    this.leafletEventService.subscribe('clickLayer').subscribe(event => {
       this.countryVisitService.addOrDelete({ countryId: event.data.feature.properties.isoA3 });
     });
   }
