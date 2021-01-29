@@ -33,6 +33,10 @@ export class LeafletEventService {
     return this.event$.pipe(filter(event => event.eventType === eventType)) as Observable<TypeToInterface<Type>>;
   }
 
+  public next<Type extends AllEventTypes>(eventType: AllEventTypes, event: Omit<TypeToInterface<Type>, 'eventType'>) {
+    this.event$.next({...event, eventType});
+  }
+
   public mouseoverLayer = (countryLeafletEvent: CountryLeafletEvent) => {
     this.event$.next({ data: countryLeafletEvent.target, eventType: 'mouseoverLayer' });
   }
@@ -41,12 +45,6 @@ export class LeafletEventService {
   }
   public clickLayer = (countryLeafletEvent: CountryLeafletEvent) => {
     this.event$.next({ data: countryLeafletEvent.target, eventType: 'clickLayer' });
-  }
-  public countryAdded = (countryGroup: CountryGroup) => {
-    this.event$.next({ data: countryGroup, eventType: 'countryAdded' });
-  }
-  public countryRemoved = (countryGroup: CountryGroup) => {
-    this.event$.next({ data: countryGroup, eventType: 'countryRemoved' });
   }
 
 }

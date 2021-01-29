@@ -11,8 +11,7 @@ export class LeafletCountryService {
 
   private countriesVisited: CountryVisit[] = [];
 
-  constructor(private countryVisitService: CountryVisitService,
-              private leafletEventService: LeafletEventService) {
+  constructor(private countryVisitService: CountryVisitService, private leafletEventService: LeafletEventService) {
   }
 
   public isCountryVisited(country: Pick<Country, 'isoA3'>, countriesVisited?: CountryVisit[]) {
@@ -28,7 +27,7 @@ export class LeafletCountryService {
           const countryIsVisited = this.isCountryVisited({ isoA3: layer.feature.properties.isoA3 }, countriesVisited);
           // Style only countries whose visited flag has changed
           if ((countryWasVisited && !countryIsVisited) || (countryIsVisited && !countryWasVisited)) {
-            countryIsVisited ? this.leafletEventService.countryAdded(layer) : this.leafletEventService.countryRemoved(layer);
+            this.leafletEventService.next(countryIsVisited ? 'countryAdded' : 'countryRemoved', { data: layer });
           }
         });
         this.countriesVisited = countriesVisited;
