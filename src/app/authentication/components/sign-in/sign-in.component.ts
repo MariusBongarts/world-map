@@ -10,8 +10,4 @@ export class SignInComponent {
 
   constructor(public authService: AuthService) { }
 
-  async submitLogin() {
-    this.authService.login('admin@world-map.de', 'password');
-  }
-
 }

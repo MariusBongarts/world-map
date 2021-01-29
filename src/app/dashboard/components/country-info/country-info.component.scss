@@ -1,8 +1,24 @@
 .country-card {
   width: 100%;
 
+  &.passport {
+    background-image: url('./../../../../assets/passport.jpg');
+    background-size: cover;
+    background-blend-mode: luminosity;
+  }
+
   .country-flag {
     background-size: cover;
+  }
+
+  mat-card-subtitle, mat-card-title {
+    mix-blend-mode: darken;
+  }
+
+  mat-card-actions {
+    button {
+      background-color: rgba(255, 255, 255, 0.349);
+    }
   }
 
 }

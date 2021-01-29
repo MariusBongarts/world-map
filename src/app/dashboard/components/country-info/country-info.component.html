@@ -1,20 +1,17 @@
-<mat-card class="country-card" *ngIf="country">
-  <mat-card-header>
-    <div
+<ng-container *ngIf="country">
+  <mat-card class="country-card" [class.passport]="(isCountryVisited$ | async)">
+    <mat-card-header>
+      <div
       mat-card-avatar
       [ngStyle]="{ 'background-image': 'url(' + country.flagUrl + ')' }"
       class="country-flag"
-    ></div>
-    <mat-card-title>{{ country.name }}</mat-card-title>
-    <mat-card-subtitle>{{ country.isoA3 }}</mat-card-subtitle>
-    <mat-icon color="accent" *ngIf="isCountryVisited$ | async">check_circle_outline</mat-icon>
-  </mat-card-header>
-  <mat-card-content>
-      <!-- <p>
-        TODO: Show countries
-      </p> -->
-    </mat-card-content>
-  <mat-card-actions>
-    <button (click)="toggleVisited()" mat-button color="primary">{{ (isCountryVisited$ | async) ? 'I have not visited' : 'I have visited' }}</button>
-  </mat-card-actions>
-</mat-card>
+      ></div>
+      <mat-card-title>{{ country.name }}</mat-card-title>
+      <mat-card-subtitle>{{ country.isoA3 }}</mat-card-subtitle>
+      <mat-icon color="accent" *ngIf="isCountryVisited$ | async">check_circle_outline</mat-icon>
+    </mat-card-header>
+    <mat-card-actions class="pt-0">
+      <button (click)="toggleVisited()" mat-button color="primary">{{ (isCountryVisited$ | async) ? 'I have not visited' : 'I have visited' }}</button>
+    </mat-card-actions>
+  </mat-card>
+</ng-container>
