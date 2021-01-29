@@ -7,8 +7,6 @@ export type LayerEventTypes = 'clickLayer' | 'mouseoverLayer' | 'mouseoutLayer';
 
 type CountryEventTypes = 'countryAdded' | 'countryRemoved';
 
-
-
 type AllEventTypes = LayerEventTypes | CountryEventTypes;
 interface LeafletEvent<T> {
   data: T;

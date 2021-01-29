@@ -16,11 +16,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    SharedModule,
     FirebaseModule,
     LeafletMapModule,
     AuthenticationModule,
     DashboardModule,
-    SharedModule,
     BrowserAnimationsModule,
   ],
   providers: [],
