@@ -1,15 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, ViewRef } from '@angular/core';
+import { MatDrawer } from '@angular/material/sidenav';
+import { DrawerService } from './shared/services/drawer.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
   title = 'world-map';
 
-  get isMobile() {
-    return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+  @ViewChild('drawer')
+  private drawerRef!: MatDrawer;
+
+  constructor(private drawerService: DrawerService) {
+
   }
+
+  public ngAfterViewInit() {
+    this.drawerService.init(this.drawerRef);
+  }
+
 
 }

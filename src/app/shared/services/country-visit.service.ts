@@ -21,6 +21,11 @@ export class CountryVisitService extends FirebaseService<CountryVisit> {
     }));
   }
 
+  public isCountryVisited(countryId: Country['isoA3']): Observable<boolean> {
+    return this.visitedCountriesOfUser.pipe(map(visitedCountriesOfUser =>
+      visitedCountriesOfUser.some(visitedCountry => visitedCountry.countryId === countryId)));
+  }
+
   /**
    * Marks a country as visited when it´s not visited yet. Else it removes the visited flag.
    */

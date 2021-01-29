@@ -12,7 +12,7 @@ import { AuthService } from '../shared/services/auth.service';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent extends HandleUnsubscribeDirective implements OnInit  {
-  hoveredCountry$!: Observable<Country>;
+  clickedCountry$!: Observable<Country>;
 
 
   constructor(public authService: AuthService, private leafletEventService: LeafletEventService) {
@@ -20,7 +20,7 @@ export class DashboardComponent extends HandleUnsubscribeDirective implements On
    }
 
   ngOnInit(): void {
-    this.hoveredCountry$ = this.leafletEventService.subscribe('mouseoverLayer').pipe(map(event => event.data.feature.properties));
+    this.clickedCountry$ = this.leafletEventService.subscribe('clickLayer').pipe(map(event => event.data.feature.properties));
   }
 
 }

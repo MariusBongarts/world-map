@@ -13,7 +13,10 @@ export class LeafletControlService {
 
   public addControl(map: L.Map) {
     this.addAttributionControl(map);
+    // this.addInfoControl(map);
+  }
 
+  public addInfoControl(map: L.Map) {
     this.info = new L.Control();
 
     this.info.onAdd = (innerMap: L.Map) => {

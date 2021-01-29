@@ -45,7 +45,7 @@ export class LeafletStyleService {
 
   private highlightFeature(countryGroup: CountryGroup) {
     countryGroup.setStyle({ opacity: this.highlightStyle.opacity });
-    this.leafletControlService.info.update(countryGroup.feature.properties);
+    // this.leafletControlService.info?.update(countryGroup.feature.properties);
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
       countryGroup.bringToFront();
     }

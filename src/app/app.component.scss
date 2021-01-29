@@ -1,9 +1,15 @@
+@import '../theme/mixins.scss';
+
 .drawer-toggle-btn {
   position: absolute;
   margin: 8px;
   right: 0px;
   top: 0;
   z-index: 9999 !important;
+}
+
+mat-drawer-container {
+  @include background-color;
 }
 
 mat-drawer {
