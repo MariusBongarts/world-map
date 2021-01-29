@@ -3,8 +3,11 @@ import { Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { CountryGroup, CountryLeafletEvent } from '../../public-interfaces';
 
-type LayerEventTypes = 'clickLayer' | 'mouseoverLayer' | 'mouseoutLayer';
+export type LayerEventTypes = 'clickLayer' | 'mouseoverLayer' | 'mouseoutLayer';
+
 type CountryEventTypes = 'countryAdded' | 'countryRemoved';
+
+
 
 type AllEventTypes = LayerEventTypes | CountryEventTypes;
 interface LeafletEvent<T> {
@@ -35,16 +38,6 @@ export class LeafletEventService {
 
   public next<Type extends AllEventTypes>(eventType: AllEventTypes, event: Omit<TypeToInterface<Type>, 'eventType'>) {
     this.event$.next({...event, eventType});
-  }
-
-  public mouseoverLayer = (countryLeafletEvent: CountryLeafletEvent) => {
-    this.event$.next({ data: countryLeafletEvent.target, eventType: 'mouseoverLayer' });
-  }
-  public mouseoutLayer = (countryLeafletEvent: CountryLeafletEvent) => {
-    this.event$.next({ data: countryLeafletEvent.target, eventType: 'mouseoutLayer' });
-  }
-  public clickLayer = (countryLeafletEvent: CountryLeafletEvent) => {
-    this.event$.next({ data: countryLeafletEvent.target, eventType: 'clickLayer' });
   }
 
 }

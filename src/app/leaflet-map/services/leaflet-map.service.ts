@@ -1,12 +1,12 @@
 import { ElementRef, Injectable } from '@angular/core';
-import {  BehaviorSubject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import * as L from 'leaflet';
 import { jsonData } from '../../../specs/dummy-data';
-import { CountryGroup, FeatureCountry } from '../../public-interfaces';
+import { CountryGroup, CountryLeafletEvent, FeatureCountry } from '../../public-interfaces';
 import { environment } from '../../../environments/environment';
 import { LeafletCountryService } from './leaflet-country.service';
 import { LeafletControlService } from './leaflet-control.service';
-import { LeafletEventService } from './leaflet-event.service';
+import { LayerEventTypes, LeafletEventService } from './leaflet-event.service';
 import { LeafletStyleService } from './leaflet-style.service';
 
 @Injectable({
@@ -25,10 +25,8 @@ export class LeafletMapService {
     zoom: 4
   };
 
-  constructor(private leafletCountryService: LeafletCountryService,
-              private leafletEventService: LeafletEventService,
-              private leafletControlService: LeafletControlService,
-              private leafletStyleService: LeafletStyleService) {
+  constructor(private leafletCountryService: LeafletCountryService, private leafletEventService: LeafletEventService,
+              private leafletControlService: LeafletControlService, private leafletStyleService: LeafletStyleService) {
   }
 
 
@@ -45,11 +43,15 @@ export class LeafletMapService {
 
     this.leafletControlService.addControl(map);
 
+    const layerEvent = (countryLeafletEvent: CountryLeafletEvent) => {
+      this.leafletEventService.next(`${countryLeafletEvent.type}Layer` as LayerEventTypes, { data: countryLeafletEvent.target });
+    };
+
     const onEachFeature = (feature: FeatureCountry, layer: CountryGroup) => {
       layer.on({
-        mouseover: this.leafletEventService.mouseoverLayer,
-        mouseout: this.leafletEventService.mouseoutLayer,
-        click: this.leafletEventService.clickLayer,
+        mouseover: layerEvent,
+        mouseout: layerEvent,
+        click: layerEvent,
       });
     };
 

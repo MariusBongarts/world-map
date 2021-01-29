@@ -15,7 +15,7 @@ export class CountryVisitService extends FirebaseService<CountryVisit> {
     super('countryVisit', firestore);
   }
 
-  public getVisitedCountriesOfUser(): Observable<CountryVisit[]> {
+  get visitedCountriesOfUser(): Observable<CountryVisit[]> {
     return combineLatest([this.authService.user, super.list()]).pipe(map(([user, countriesVisited]) => {
       return countriesVisited.filter(countryVisit => countryVisit.userId === user?.uid);
     }));
@@ -26,7 +26,7 @@ export class CountryVisitService extends FirebaseService<CountryVisit> {
    */
   public async addOrDelete(item: Omit<CountryVisit, 'userId'>): Promise<CountryVisit | void> {
     return new Promise(res => {
-      this.getVisitedCountriesOfUser().pipe(first()).subscribe(countriesVisited => {
+      this.visitedCountriesOfUser.pipe(first()).subscribe(countriesVisited => {
         const countryIsVisited = countriesVisited.find(countryVisited => countryVisited.countryId === item.countryId);
         if (!countryIsVisited) { res(super.add({ ...item, userId: this.authService.user.getValue()?.uid || '' })); }
         if (countryIsVisited && countryIsVisited.id) { res(super.delete(countryIsVisited.id)); }

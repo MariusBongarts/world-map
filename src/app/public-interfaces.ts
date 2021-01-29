@@ -1,3 +1,4 @@
+import { LayerEvent } from 'leaflet';
 
 export interface Entity {
   id?: string;
@@ -32,4 +33,7 @@ export interface CountryControl extends L.Control {
   // Allow additional properties
   [prop: string]: any;
 }
-export type CountryLeafletEvent = { target: CountryGroup };
+export type CountryLeafletEvent = { target: CountryGroup, type: 'click' | 'mouseover' | 'mouseout' | string };
+
+const test: LayerEvent['type'] = 'clickd';
+

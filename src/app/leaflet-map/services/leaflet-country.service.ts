@@ -20,7 +20,7 @@ export class LeafletCountryService {
 
   public checkForCountryChanges(geoJson: L.GeoJSON) {
 
-    this.countryVisitService.getVisitedCountriesOfUser().subscribe(
+    this.countryVisitService.visitedCountriesOfUser.subscribe(
       countriesVisited => {
         (geoJson.getLayers() as CountryGroup[]).forEach(layer => {
           const countryWasVisited = this.isCountryVisited({ isoA3: layer.feature.properties.isoA3 }, this.countriesVisited);
