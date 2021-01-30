@@ -1,4 +1,6 @@
 .map-container {
-  height: 100vh;
-  width: 100%;
+  /** This is done to get some padding for the layers. While panning the surface they were disappearing */
+  height: 160vh;
+  width: 160vw;
+  transform: translate(-30vw, -30vh);
 }

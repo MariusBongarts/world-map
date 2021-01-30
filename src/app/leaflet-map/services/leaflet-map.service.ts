@@ -31,7 +31,7 @@ export class LeafletMapService {
 
   public initMap(mapContainer: ElementRef<HTMLElement>) {
     const map = new L.Map(mapContainer.nativeElement,
-      { preferCanvas: false, trackResize: true, minZoom: 2 }).setView(
+      { preferCanvas: false, trackResize: false, minZoom: 2 }).setView(
         [this.initialState.lat, this.initialState.lng],
         this.initialState.zoom,
       );
@@ -49,7 +49,7 @@ export class LeafletMapService {
 
     const onEachFeature = (feature: FeatureCountry, layer: CountryGroup) => {
       // TODO: This fixes that layers are not showing wile the user drags. Still this solution reduces the performance of the app!
-      map.getRenderer(layer as any).options.padding = 1;
+      // map.getRenderer(layer as any).options.padding = 1;
       layer.on({
         mouseover: layerEvent,
         mouseout: layerEvent,
