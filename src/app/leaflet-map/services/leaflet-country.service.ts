@@ -32,13 +32,5 @@ export class LeafletCountryService {
         });
         this.countriesVisited = countriesVisited;
       });
-
-    this.listenForEvents();
-  }
-
-  private listenForEvents() {
-    // this.leafletEventService.subscribe('clickLayer').subscribe(event => {
-    //   this.countryVisitService.addOrDelete({ countryId: event.data.feature.properties.isoA3 });
-    // });
   }
 }

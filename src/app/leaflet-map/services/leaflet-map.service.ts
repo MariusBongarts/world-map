@@ -8,7 +8,6 @@ import { LeafletCountryService } from './leaflet-country.service';
 import { LeafletControlService } from './leaflet-control.service';
 import { LayerEventTypes, LeafletEventService } from './leaflet-event.service';
 import { LeafletStyleService } from './leaflet-style.service';
-
 @Injectable({
   providedIn: 'root'
 })
@@ -31,13 +30,14 @@ export class LeafletMapService {
 
 
   public initMap(mapContainer: ElementRef<HTMLElement>) {
-    const map = new L.Map(mapContainer.nativeElement, { preferCanvas: true, trackResize: false, minZoom: 2 }).setView(
-      [this.initialState.lat, this.initialState.lng],
-      this.initialState.zoom,
-    );
+    const map = new L.Map(mapContainer.nativeElement,
+      { preferCanvas: false, trackResize: true, minZoom: 2 }).setView(
+        [this.initialState.lat, this.initialState.lng],
+        this.initialState.zoom,
+      );
 
     L.mapboxGL({
-      style: `${this.leafletStyleService.mapStyles[3]}?optimize=true&apiKey=${environment.geoApifyKey}`,
+      style: `${this.leafletStyleService.mapStyles[3]}?apiKey=${environment.geoApifyKey}`,
       accessToken: environment.mapboxGLApiKey,
     }).addTo(map);
 
@@ -48,6 +48,8 @@ export class LeafletMapService {
     };
 
     const onEachFeature = (feature: FeatureCountry, layer: CountryGroup) => {
+      // TODO: This fixes that layers are not showing wile the user drags. Still this solution reduces the performance of the app!
+      map.getRenderer(layer as any).options.padding = 1;
       layer.on({
         mouseover: layerEvent,
         mouseout: layerEvent,
@@ -56,7 +58,7 @@ export class LeafletMapService {
     };
 
     const geoJSONOptions: L.GeoJSONOptions = {
-      style: this.leafletStyleService.defaultStyle,
+      style: { ...this.leafletStyleService.defaultStyle },
       onEachFeature,
     };
 
