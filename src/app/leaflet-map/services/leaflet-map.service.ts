@@ -31,13 +31,13 @@ export class LeafletMapService {
 
 
   public initMap(mapContainer: ElementRef<HTMLElement>) {
-    const map = new L.Map(mapContainer.nativeElement, { preferCanvas: true, trackResize: false, minZoom: 4 }).setView(
+    const map = new L.Map(mapContainer.nativeElement, { preferCanvas: true, trackResize: false, minZoom: 2 }).setView(
       [this.initialState.lat, this.initialState.lng],
       this.initialState.zoom,
     );
 
     L.mapboxGL({
-      style: `${this.leafletStyleService.mapStyles[3]}?apiKey=${environment.geoApifyKey}`,
+      style: `${this.leafletStyleService.mapStyles[3]}?optimize=true&apiKey=${environment.geoApifyKey}`,
       accessToken: environment.mapboxGLApiKey,
     }).addTo(map);
 

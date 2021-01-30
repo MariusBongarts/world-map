@@ -2,16 +2,20 @@
   width: 100%;
 
   &.passport {
-    background-image: url('./../../../../assets/passport.jpg');
+    background-image: url("./../../../../assets/passport.jpg");
     background-size: cover;
     background-blend-mode: luminosity;
   }
 
   .country-flag {
-    background-size: cover;
+    background-size: 100% 100%;
+    height: 40px;
+    width: 60px;
+    border-radius: 20%;
   }
 
-  mat-card-subtitle, mat-card-title {
+  mat-card-subtitle,
+  mat-card-title {
     mix-blend-mode: darken;
   }
 
@@ -20,5 +24,4 @@
       background-color: rgba(255, 255, 255, 0.349);
     }
   }
-
 }

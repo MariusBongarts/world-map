@@ -23,7 +23,7 @@ export class LeafletStyleService {
   public defaultStyle = {
     fillColor: '#242525',
     weight: 1,
-    opacity: 0.2,
+    opacity: 0.3,
     color: '#ffffff',
     fillOpacity: 0.8
   };
@@ -52,9 +52,9 @@ export class LeafletStyleService {
   }
 
   private markAsVisited(countryGroup: CountryGroup) {
-    countryGroup.setStyle({ fillOpacity: 0 });
+    countryGroup.setStyle({ fillOpacity: 0, color: this.defaultStyle.fillColor });
   }
   private markAsUnvisited(countryGroup: CountryGroup) {
-    countryGroup.setStyle({ fillOpacity: this.defaultStyle.fillOpacity });
+    countryGroup.setStyle({ fillOpacity: this.defaultStyle.fillOpacity, color: this.defaultStyle.color });
   }
 }

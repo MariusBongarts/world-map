@@ -11,7 +11,7 @@
       <mat-icon color="accent" *ngIf="isCountryVisited$ | async">check_circle_outline</mat-icon>
     </mat-card-header>
     <mat-card-actions class="pt-0">
-      <button (click)="toggleVisited()" mat-button color="primary">{{ (isCountryVisited$ | async) ? 'I have not visited' : 'I have visited' }}</button>
+      <button (click)="toggleVisited()" mat-raised-button>{{ (isCountryVisited$ | async) ? 'I have not visited' : 'I have visited' }}</button>
     </mat-card-actions>
   </mat-card>
 </ng-container>
