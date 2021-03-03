@@ -1,6 +1,6 @@
 # WorldMap
 
-Demoe: https://webmarker-3dd8c.web.app/dashboard
+Demo: https://webmarker-3dd8c.web.app/dashboard
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.5.
 
